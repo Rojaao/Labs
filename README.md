@@ -1,16 +1,13 @@
 
-# 🤖 Deriv Over 3 Bot (Avançado)
+# 🤖 Deriv Bot - Estratégia 0Matador
 
-Este robô opera na Deriv com base na estratégia Over 3 e conta com controle total:
+Este robô opera automaticamente na Deriv.com com base nas últimas estratégias personalizadas:
 
-- Entrada baseada nos últimos 8 dígitos
-- Controle de take profit e stop loss
-- Multiplicador configurável após 2 perdas
-- Interface via Streamlit
+- Estratégia 0Matador: entra em Over 3 ou Over 4 se os últimos 8 dígitos forem todos ≥ 4.
+- Pausa automática entre operações (5 a 120 segundos).
+- Controle de Martingale e limite de ganho/perda.
 
 ## Como usar
-1. Suba este projeto no GitHub
-2. Conecte no Streamlit Cloud (https://streamlit.io/cloud)
-3. Defina os parâmetros e inicie o robô
-
-Recomenda-se uso em conta virtual para testes.
+1. Instale as dependências com `pip install -r requirements.txt`
+2. Execute com `streamlit run app.py`
+3. Insira seu token da Deriv e clique em Iniciar

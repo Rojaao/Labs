@@ -41,15 +41,6 @@ async def run_bot_loop():
                 logs.append(log)
                 log_area.code("\n".join(logs[-25:]), language='text')
 
-                if finished:
-                    await asyncio.sleep(2)  # como se clicasse em parar
-                    st.session_state.bot_running = False
-                    wait_time = random.randint(5, 120)
-                    status_area.warning(f"Robô pausado. Reiniciando em {wait_time} segundos...")
-                    await asyncio.sleep(wait_time)
-                    st.session_state.bot_running = True
-                    break  # volta para while True e reinicia
-
         except Exception as e:
             status_area.error(f"Erro: {str(e)}")
             st.session_state.bot_running = False

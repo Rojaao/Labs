@@ -1,3 +1,4 @@
+
 import asyncio
 import websockets
 import json
@@ -7,7 +8,11 @@ import streamlit as st
 async def aguardar_resultado(ws, contract_id):
     while True:
         result_msg = json.loads(await ws.recv())
-        if result_msg.get("contract") and result_msg["contract"].get("contract_id") == contract_id:
+        if result_msg.get("msg_type") == "proposal_open_contract":
+            contract = result_msg.get("proposal_open_contract")
+            if contract.get("contract_id") == contract_id and contract.get("is_sold"):
+                return contract
+        elif result_msg.get("msg_type") == "contract" and result_msg.get("contract", {}).get("contract_id") == contract_id:
             return result_msg["contract"]
 
 async def start_bot(token, stake, threshold, take_profit, stop_loss, multiplicador, estrategia):
@@ -31,8 +36,6 @@ async def start_bot(token, stake, threshold, take_profit, stop_loss, multiplicad
         loss_streak = 0
         current_stake = stake
         total_profit = 0
-        win_count = 0
-        loss_count = 0
 
         while True:
             if total_profit >= take_profit:
@@ -52,7 +55,6 @@ async def start_bot(token, stake, threshold, take_profit, stop_loss, multiplicad
                 quote = msg["tick"]["quote"]
                 digit = int(str(quote)[-1])
                 digits.append(digit)
-
                 yield "📥 Tick recebido", f"Preço: {quote} | Último dígito: {digit}", False
 
                 if len(digits) > 8:
@@ -97,26 +99,27 @@ async def start_bot(token, stake, threshold, take_profit, stop_loss, multiplicad
                             contract_id = buy_response["buy"]["contract_id"]
                             yield "✅ Compra enviada", f"Contrato #{contract_id} iniciado.", False
 
+                            await ws.send(json.dumps({
+                                "proposal_open_contract": 1,
+                                "contract_id": contract_id
+                            }))
                             contract = await aguardar_resultado(ws, contract_id)
-                            status = contract["status"]
-                            profit = contract.get("profit", 0)
+                            status = contract.get("status")
+                            profit = float(contract.get("profit", 0))
                             total_profit += profit
 
                             if status == "won":
-                                win_count += 1
                                 loss_streak = 0
                                 current_stake = stake
                                 yield "🏆 WIN", f"Lucro ${profit:.2f} | Total: ${total_profit:.2f}", False
                             elif status == "lost":
-                                loss_count += 1
                                 loss_streak += 1
                                 yield "💥 LOSS", f"Prejuízo ${profit:.2f} | Total: ${total_profit:.2f}", False
                                 if loss_streak >= 2:
                                     current_stake *= multiplicador
-                                    yield "🔁 Multiplicador aplicado", f"Nova stake: R${current_stake:.2f}", False
+                                    yield "🔁 Martingale", f"Nova stake: ${current_stake:.2f}", False
 
                             digits.clear()
-
                             wait_time = random.randint(5, 120)
-                            yield "⏳ Aguardando", f"Esperando {wait_time} segundos antes de reiniciar análise...", False
+                            yield "⏳ Pausa", f"Aguardando {wait_time} segundos...", False
                             await asyncio.sleep(wait_time)

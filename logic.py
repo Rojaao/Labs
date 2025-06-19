@@ -10,7 +10,7 @@ async def aguardar_resultado(ws, contract_id):
         if result_msg.get("contract") and result_msg["contract"].get("contract_id") == contract_id:
             return result_msg["contract"]
 
-async def start_bot(token, stake, threshold, take_profit, stop_loss, multiplicador):
+async def start_bot(token, stake, threshold, take_profit, stop_loss, multiplicador, estrategia):
     uri = "wss://ws.derivws.com/websockets/v3?app_id=1089"
     async with websockets.connect(uri) as ws:
         await ws.send(json.dumps({"authorize": token}))

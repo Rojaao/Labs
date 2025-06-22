@@ -75,7 +75,7 @@ async def start_bot(token, stake, threshold, take_profit, stop_loss, multiplicad
                     elif estrategia in ["Nenhum dígito < 4 → Over 3 ou 4 aleatório", "0Matador"]:
                         if all(d >= 4 for d in digits):
                             tipo = "DIGITOVER"
-                            barrier = random.choice(["3", "4"])
+                            barrier = random.choice(["4"])
                             yield "🔥 Estratégia 0Matador", f"Dígitos: {digits}. Enviando OVER {barrier}", False
 
                     if tipo and barrier:

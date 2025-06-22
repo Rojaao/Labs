@@ -4,7 +4,7 @@ from logic import start_bot
 import random
 
 st.set_page_config(page_title="Deriv Bot - Estratégia", layout="wide")
-st.title("🤖 Deriv Bot - Estratégia Personalizada")
+st.title("🤖 Deriv Bot - OVER 4 MITIGADA")
 
 token = st.text_input("🔑 Token da Deriv", type="password")
 stake = st.number_input("💵 Valor Inicial da Entrada", min_value=0.35, value=1.00, step=0.01)
